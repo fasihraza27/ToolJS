@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Processing Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header>
+      <div class="left-section">
+        <div class="logo">
+          <img
+            src="https://foree.co/assets/img/favicon.png"
+            alt="Logo"
+            style="width: 60%"
+            class="logo-img" />
+        </div>
+
+        <div class="brand">
+          <h1>Foree Business Tool</h1>
+          <p>
+            Powered by<img
+              src="https://foree.co/assets/img/wp-logo.png"
+              alt="Logo"
+              class="logo-img" />
+          </p>
+        </div>
+      </div>
+
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <!-- Brand/Logo -->
+      </nav>
+    </header>
+
+   <main class="container">
+
+    <div class="page-title">
+        <h1>Data Processing Tool</h1>
+        <p>
+            Upload your file, select the required time range and process your
+            data.
+        </p>
+    </div>
+
+
+    <div class="tool-card">
+
+        <!-- Upload File -->
+        <div class="section-title">
+            Upload File
+        </div>
+
+        <div class="file-box">
+
+            <label for="fileInput" class="file-upload-label">
+
+                <div class="upload-icon">
+                    📁
+                </div>
+
+                <div class="upload-text">
+                    <strong>Choose a file</strong>
+                    <span>CSV, XLSX or XLS</span>
+                </div>
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept=".csv,.xlsx,.xls"
+                >
+
+            </label>
+
+        </div>
+
+
+        <!-- Date & Time -->
+        <div class="section-title date-section-title">
+            Date & Time Range
+        </div>
+
+
+        <div class="date-row">
+
+            <div class="input-group">
+                <label for="fromDateTime">
+                    From
+                </label>
+                <input
+                    type="datetime-local"
+                    id="fromDateTime"
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="toDateTime">
+                    To
+                </label>
+                <input
+                    type="datetime-local"
+                    id="toDateTime"
+                >
+            </div>
+        </div>
+
+
+        <!-- Buttons -->
+        <div class="button-row">
+
+            <button
+                type="button"
+                class="btn-t0"
+                onclick="processapi()">
+                Process File (T+0)
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-t1"
+                onclick="processFile()">
+                Process File (T+1)
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-download"
+                onclick="downloadCSV()">
+                Download CSV
+            </button>
+
+        </div>
+
+
+        <!-- Result -->
+        <div id="result" class="result-box">
+            Results will appear here...
+        </div>
+
+    </div>
+
+</main>
+
+    <footer>
+      <div class="col-12 mb-4 mb-sm-0">
+        <img
+          src="https://foree.co/assets/img/security-icons.png"
+          alt="security with foree"
+          height="25"
+          class="mt-2" />
+      </div>
+      2025 © ForeePay (Private) Limited. All Rights Reserved.
+    </footer>
+    <script src="tool.js"></script>
+  </body>
+</html>

@@ -1,0 +1,368 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background: linear-gradient(90deg, #007bff, #00b4d8);
+  color: white;
+  padding: 20px 40px;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  color: #007bff;
+  font-weight: 700;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.brand {
+  display: flex !important;
+  flex-direction: column;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-style: italic;
+  color: #e3f2fd;
+}
+
+/* =========================
+   Main Container
+========================= */
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 50px auto;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-title h1 {
+    font-size: 32px;
+    color: #2d5c63;
+    margin-bottom: 8px;
+}
+
+.page-title p {
+    color: #7a989c;
+    font-size: 15px;
+}
+
+/* =========================
+   Card
+========================= */
+
+.tool-card {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 18px;
+    border: 1px solid #e1eded;
+    box-shadow: 0 10px 30px rgba(46, 92, 99, 0.08);
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #315e64;
+    margin-bottom: 14px;
+}
+
+.date-section-title {
+    margin-top: 28px;
+}
+
+/* =========================
+   File Upload
+========================= */
+
+.file-box {
+    border: 2px dashed #b8d7d8;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fbfefe, #f5fbfb);
+    transition: 0.25s ease;
+}
+
+.file-box:hover {
+    border-color: #6fa6a8;
+    background: #f8fcfc;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 28px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.file-upload-label input[type="file"] {
+    display: none;
+}
+
+.upload-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    background: #dff1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+
+.upload-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.upload-text strong {
+    color: #345f64;
+    font-size: 16px;
+}
+
+.upload-text span {
+    color: #88a3a7;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+/* =========================
+   Date Inputs
+========================= */
+
+.date-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #56797d;
+    margin-bottom: 7px;
+}
+
+.input-group input[type="datetime-local"] {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #cfe2e3;
+    border-radius: 10px;
+    background: #fcfefe;
+    color: #345f64;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.input-group input[type="datetime-local"]:hover {
+    border-color: #9dc4c6;
+}
+
+.input-group input[type="datetime-local"]:focus {
+    border-color: #6fa6a8;
+    box-shadow: 0 0 0 4px rgba(111, 166, 168, 0.15);
+}
+
+.input-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.button-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 30px;
+}
+
+.button-row button {
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-t0 {
+    background: #5f9ea0;
+    color: white;
+}
+
+.btn-t1 {
+    background: #7db2b4;
+    color: white;
+}
+
+.btn-download {
+    background: #e2f0f0;
+    color: #315e64;
+}
+
+.button-row button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.btn-t0:hover {
+    background: #538f91;
+}
+
+.btn-t1:hover {
+    background: #6ea6a8;
+}
+
+.btn-download:hover {
+    background: #d5e8e8;
+}
+
+/* =========================
+   Result Box
+========================= */
+
+.result-box {
+    margin-top: 28px;
+    padding: 18px;
+    min-height: 70px;
+    border: 1px solid #e1eded;
+    border-radius: 10px;
+    background: #f8fcfc;
+    color: #5c7f84;
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 768px) {
+
+    .container {
+        width: 94%;
+        margin: 30px auto;
+    }
+
+    .tool-card {
+        padding: 22px;
+    }
+
+    .date-row {
+        grid-template-columns: 1fr;
+    }
+
+    .button-row {
+        grid-template-columns: 1fr;
+    }
+
+    .file-upload-label {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .page-title h1 {
+        font-size: 28px;
+    }
+}
+
+/* Footer */
+footer {
+  background-color: #168d7f;
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 16px;
+}
+
+footer a {
+  color: #00b4d8;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  header {
+    padding: 0 20px;
+  }
+
+  .container {
+    width: 92%;
+    margin: 30px auto;
+  }
+
+  .tool-card {
+    padding: 22px;
+  }
+
+  .date-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .button-row {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title h1 {
+    font-size: 25px;
+  }
+}
