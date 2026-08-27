@@ -75,6 +75,55 @@
             </label>
 
         </div>
+        <br>
+        <!-- Upload TXT File -->
+<div class="section-title">
+    Convert TXT to Excel
+</div>
+
+<div class="file-box">
+
+    <label for="folderInput" class="file-upload-label">
+
+        <div class="upload-icon">
+            📄
+        </div>
+
+        <div class="upload-text">
+            <strong>Choose TXT files</strong>
+            <span>TXT files only</span>
+        </div>
+
+        <input
+            type="file"
+            id="folderInput"
+            accept=".txt"
+            multiple
+        >
+
+    </label>
+
+</div>
+
+<!-- Convert Button -->
+<div class="button-row">
+
+    <button
+        type="button"
+        id="convertButton"
+        class="btn-download"
+        onclick="convertToExcel()">
+        Generate Excel Report
+    </button>
+
+</div>
+
+<!-- TXT Conversion Status -->
+<div
+    id="status"
+    class="result-box"
+    style="display: none;">
+</div>
 
 
         <!-- Date & Time -->
@@ -155,6 +204,6 @@
       </div>
       2025 © ForeePay (Private) Limited. All Rights Reserved.
     </footer>
-    <script src="tool.js"></script>
+    <script src="./tool.js"></script>
   </body>
 </html>
