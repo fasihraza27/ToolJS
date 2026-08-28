@@ -2,6 +2,7 @@ let excelData = [];
 let processedData = [];
 let t0Businesses = new Map();
 let processType = "t1";
+let txtExcelData = [];
 
 document.getElementById("fileInput").addEventListener("change", function (e) {
   const file = e.target.files[0];
@@ -657,7 +658,7 @@ async function convertToExcel() {
     // HEADINGS
     // ==========================================
 
-    let txtExcelData = [
+     txtExcelData = [
       [
         "1Link prefix",
         "Foree ID",
@@ -718,12 +719,14 @@ async function convertToExcel() {
       throw new Error("No transaction data was found.");
     }
 
+
     // ==========================================
     // CREATE WORKSHEET
     // ==========================================
 
+    matchTxtWithT0();
+ 
     const worksheet = XLSX.utils.aoa_to_sheet(txtExcelData);
-
     worksheet["!cols"] = [
       { wch: 15 },
       { wch: 15 },
@@ -846,4 +849,50 @@ function parseFixedWidth(line) {
     stan,
     authId,
   ];
+}
+
+function matchTxtWithT0() {
+
+  if(!processedData || processedData.length === 0){
+    return;
+  }
+
+  // Only match against T+0
+  if (processType !== "t0") {
+    return;
+  }
+
+//  CREATE LOOKUP FROM T+0 DATA
+  const t0Lookup = new Set();
+
+  processedData.forEach((row) => {
+    const paymentRefId = String(row["Payment Ref ID"] ?? "").trim();
+    const paidByCustomer = Number(row["Paid By Customer"]);
+
+    if (paymentRefId === "" || isNaN(paidByCustomer)) {
+      return;
+    }
+
+    const key = paymentRefId + "|" + paidByCustomer/*.toFixed(2)*/;
+    t0Lookup.add(key);
+  });
+
+  // MATCH TXT DATA
+
+for (let i = 1; i < txtExcelData.length; i++) {
+  const row = txtExcelData[i];
+  const stan = String(row[10] ?? "").trim();
+  const amount = Number(row[5]);
+
+  const key = stan + "|" + (isNaN(amount) ? "" : amount/*.toFixed(2)*/);
+  if (t0Lookup.has(key)){
+    row.push("Matched");
+  } else {
+    row.push("Unmatched");
+  }
+}
+
+// add column heading
+
+txtExcelData[0].push("Match OR Unmatch");
 }
