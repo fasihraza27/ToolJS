@@ -1538,6 +1538,228 @@ function parseFixedWidth(line) {
   ];
 }
 
+// ============================================================
+// NORMALIZE MATCH VALUE
+// ============================================================
+
+function normalizeMatchValue(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return "";
+  }
+
+  return String(value)
+    .trim()
+    .replace(/^0+/, "") || "0";
+}
+
+
+// ============================================================
+// NORMALIZE AMOUNT
+// ============================================================
+
+function normalizeAmount(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
+
+  const amount = Number(
+    String(value)
+      .replace(/,/g, "")
+      .trim()
+  );
+
+  if (isNaN(amount)) {
+    return null;
+  }
+
+  return Number(amount.toFixed(2));
+}
+
+
+// ============================================================
+// STEP 9 — MATCH DATA
+// ============================================================
+
+function matchData() {
+
+  const matchingStatus =
+    document.getElementById("matchingStatus");
+
+
+  // ==========================================================
+  // CHECK PROCESSED CSV
+  // ==========================================================
+
+  if (
+    !processedData ||
+    processedData.length === 0
+  ) {
+
+    matchingStatus.innerHTML =
+      "No processed CSV data available.";
+
+    return;
+  }
+
+
+  // ==========================================================
+  // CHECK TXT DATA
+  // ==========================================================
+
+  if (
+    !txtExcelData ||
+    txtExcelData.length <= 1
+  ) {
+
+    matchingStatus.innerHTML =
+      "No TXT transaction data available.";
+
+    return;
+  }
+
+
+  // ==========================================================
+  // CREATE LOOKUP FROM PROCESSED CSV
+  // ==========================================================
+
+  const processedLookup = new Set();
+
+
+  processedData.forEach((row) => {
+
+    // CSV:
+    // Payment Ref ID = STAN
+    // Paid By Customer = Amount
+
+    const paymentRefId =
+      normalizeMatchValue(
+        row["Payment Ref ID"]
+      );
+
+
+    const paidByCustomer =
+      normalizeAmount(
+        row["Paid By Customer"]
+      );
+
+
+    // Ignore invalid CSV rows
+
+    if (
+      paymentRefId === "" ||
+      paidByCustomer === null
+    ) {
+
+      return;
+    }
+
+
+    const key =
+      paymentRefId +
+      "|" +
+      paidByCustomer;
+
+
+    processedLookup.add(key);
+  });
+
+
+  // ==========================================================
+  // MATCH TXT DATA
+  // ==========================================================
+
+  let matched = 0;
+
+  let unmatched = 0;
+
+
+  for (
+    let i = 1;
+    i < txtExcelData.length;
+    i++
+  ) {
+
+    const row =
+      txtExcelData[i];
+
+
+    // TXT column 10 = STAN
+
+    const stan =
+      normalizeMatchValue(
+        row[10]
+      );
+
+
+    // TXT column 5 = Amount
+
+    const amount =
+      normalizeAmount(
+        row[5]
+      );
+
+
+    const key =
+      stan +
+      "|" +
+      (
+        amount === null
+          ? ""
+          : amount
+      );
+
+
+    // ========================================================
+    // MATCH
+    // ========================================================
+
+    if (
+      processedLookup.has(key)
+    ) {
+
+      row.push("Matched");
+
+      matched++;
+
+    } else {
+
+      row.push("Unmatched");
+
+      unmatched++;
+    }
+  }
+
+
+  // ==========================================================
+  // ADD MATCH COLUMN
+  // ==========================================================
+
+  txtExcelData[0].push(
+    "Match OR Unmatch"
+  );
+
+
+  // ==========================================================
+  // SHOW RESULT
+  // ==========================================================
+
+  matchingStatus.innerHTML =
+    `<strong>${processType.toUpperCase()} matching completed.</strong><br>` +
+    `Processed CSV rows: ${processedData.length}<br>` +
+    `TXT transactions: ${txtExcelData.length - 1}<br>` +
+    `Matched: ${matched}<br>` +
+    `Unmatched: ${unmatched}`;
+}
 
 // ============================================================
 // STEP 9 — MATCH DATA
@@ -1557,7 +1779,6 @@ function matchData() {
         return;
     }
 
-
     if (!txtExcelData || txtExcelData.length <= 1) {
 
         matchingStatus.innerHTML =
@@ -1566,75 +1787,58 @@ function matchData() {
         return;
     }
 
-
     // =========================================================
     // CREATE LOOKUP FROM PROCESSED CSV
     // =========================================================
 
     const processedLookup = new Set();
-
-
     processedData.forEach((row) => {
-
         const paymentRefId =
-            String(
-                row["Payment Ref ID"] ?? ""
-            ).trim();
-
+            normalizeMatchValue(
+                row["Payment Ref ID"]
+            );
 
         const paidByCustomer =
             Number(
                 row["Paid By Customer"]
             );
 
-
         if (
             paymentRefId === "" ||
             isNaN(paidByCustomer)
         ) {
-
             return;
         }
-
 
         const key =
             paymentRefId +
             "|" +
             paidByCustomer;
 
-
         processedLookup.add(key);
     });
-
 
     // =========================================================
     // MATCH TXT DATA
     // =========================================================
 
     let matched = 0;
-
     let unmatched = 0;
-
 
     for (
         let i = 1;
         i < txtExcelData.length;
         i++
     ) {
-
         const row =
             txtExcelData[i];
-
-
         const stan =
-            String(
-                row[10] ?? ""
-            ).trim();
-
+            normalizeMatchValue(
+                row[10]
+            );
 
         const amount =
             Number(row[5]);
-
 
         const key =
             stan +
