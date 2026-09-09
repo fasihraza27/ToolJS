@@ -5,8 +5,8 @@
   font-family: Arial, sans-serif;
 }
 
-div{
-    margin-top: 20px;
+div {
+  margin-top: 0;
 }
 
 body {
@@ -69,262 +69,307 @@ header {
   color: #e3f2fd;
 }
 
+
 /* =========================
-   Main Container
+   MAIN CONTAINER
 ========================= */
 
 .container {
-    width: 90%;
-    max-width: 900px;
-    margin: 50px auto;
+  width: 94%;
+  max-width: 1100px;
+  margin: 18px auto;
 }
 
 .page-title {
-    text-align: center;
-    margin-bottom: 30px;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
 .page-title h1 {
-    font-size: 32px;
-    color: #2d5c63;
-    margin-bottom: 8px;
+  font-size: 25px;
+  color: #2d5c63;
+  margin-bottom: 3px;
 }
 
 .page-title p {
-    color: #7a989c;
-    font-size: 15px;
+  color: #7a989c;
+  font-size: 13px;
 }
 
+
 /* =========================
-   Card
+   CARD
 ========================= */
 
 .tool-card {
-    background: #ffffff;
-    padding: 32px;
-    border-radius: 18px;
-    border: 1px solid #e1eded;
-    box-shadow: 0 10px 30px rgba(46, 92, 99, 0.08);
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e1eded;
+  box-shadow: 0 8px 25px rgba(46, 92, 99, 0.08);
 }
 
-.section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #315e64;
-    margin-bottom: 14px;
-}
-
-.date-section-title {
-    margin-top: 28px;
-}
 
 /* =========================
-   File Upload
+   CSV + TXT SIDE BY SIDE
+========================= */
+
+.upload-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 0 0 12px 0;
+}
+
+.upload-section {
+  margin: 0;
+}
+
+.upload-section .section-title {
+  margin: 0 0 6px 0;
+}
+
+
+/* =========================
+   SECTION TITLES
+========================= */
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #315e64;
+  margin: 10px 0 6px 0;
+}
+
+.upload-row .section-title {
+  margin-top: 0;
+}
+
+
+/* =========================
+   FILE UPLOAD
 ========================= */
 
 .file-box {
-    border: 2px dashed #b8d7d8;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #fbfefe, #f5fbfb);
-    transition: 0.25s ease;
+  border: 2px dashed #b8d7d8;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfefe, #f5fbfb);
+  transition: 0.25s ease;
+  margin: 0;
 }
 
 .file-box:hover {
-    border-color: #6fa6a8;
-    background: #f8fcfc;
+  border-color: #6fa6a8;
+  background: #f8fcfc;
 }
 
 .file-upload-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 28px;
-    cursor: pointer;
-    text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 17px;
+  cursor: pointer;
+  text-align: left;
 }
 
 .file-upload-label input[type="file"] {
-    display: none;
+  display: none;
 }
 
 .upload-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 14px;
-    background: #dff1f1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
+  width: 45px;
+  height: 45px;
+  border-radius: 11px;
+  background: #dff1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  flex-shrink: 0;
 }
 
 .upload-text {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }
 
 .upload-text strong {
-    color: #345f64;
-    font-size: 16px;
+  color: #345f64;
+  font-size: 14px;
 }
 
 .upload-text span {
-    color: #88a3a7;
-    font-size: 13px;
-    margin-top: 3px;
+  color: #88a3a7;
+  font-size: 12px;
+  margin-top: 2px;
 }
 
+
 /* =========================
-   Date Inputs
+   FILE NAME
+========================= */
+
+.file-name {
+  margin: 5px 0 0 0;
+  min-height: 16px;
+  font-size: 12px;
+  color: #56797d;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   DATE & TIME
 ========================= */
 
 .date-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0;
 }
 
 .input-group {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
 }
 
 .input-group label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #56797d;
-    margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #56797d;
+  margin-bottom: 4px;
 }
 
 .input-group input[type="datetime-local"] {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-    border: 1px solid #cfe2e3;
-    border-radius: 10px;
-    background: #fcfefe;
-    color: #345f64;
-    font-size: 14px;
-    outline: none;
-    transition: 0.2s ease;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #cfe2e3;
+  border-radius: 9px;
+  background: #fcfefe;
+  color: #345f64;
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s ease;
 }
 
 .input-group input[type="datetime-local"]:hover {
-    border-color: #9dc4c6;
+  border-color: #9dc4c6;
 }
 
 .input-group input[type="datetime-local"]:focus {
-    border-color: #6fa6a8;
-    box-shadow: 0 0 0 4px rgba(111, 166, 168, 0.15);
+  border-color: #6fa6a8;
+  box-shadow: 0 0 0 3px rgba(111, 166, 168, 0.15);
 }
 
 .input-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    opacity: 0.7;
+  cursor: pointer;
+  opacity: 0.7;
 }
 
+
 /* =========================
-   Buttons
+   BUTTONS
 ========================= */
 
 .button-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 8px 0 0 0;
 }
 
 .button-row button {
-    height: 48px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  height: 42px;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-t0 {
-    background: #5f9ea0;
-    color: white;
+  background: #5f9ea0;
+  color: white;
 }
 
 .btn-t1 {
-    background: #7db2b4;
-    color: white;
+  background: #7db2b4;
+  color: white;
 }
 
 .btn-download {
-    background: #e2f0f0;
-    color: #315e64;
+  background: #e2f0f0;
+  color: #315e64;
 }
 
 .button-row button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
 }
 
 .btn-t0:hover {
-    background: #538f91;
+  background: #538f91;
 }
 
 .btn-t1:hover {
-    background: #6ea6a8;
+  background: #6ea6a8;
 }
 
 .btn-download:hover {
-    background: #d5e8e8;
+  background: #d5e8e8;
 }
 
+
 /* =========================
-   Result Box
+   RESULT BOX
 ========================= */
 
 .result-box {
-    margin-top: 28px;
-    padding: 18px;
-    min-height: 70px;
-    border: 1px solid #e1eded;
-    border-radius: 10px;
-    background: #f8fcfc;
-    color: #5c7f84;
+  margin: 7px 0 0 0;
+  padding: 10px 13px;
+  min-height: 42px;
+  border: 1px solid #e1eded;
+  border-radius: 9px;
+  background: #f8fcfc;
+  color: #5c7f84;
+  font-size: 12px;
 }
+
 
 /* =========================
-   Mobile
+   PROCESS STATUS
 ========================= */
 
-@media (max-width: 768px) {
-
-    .container {
-        width: 94%;
-        margin: 30px auto;
-    }
-
-    .tool-card {
-        padding: 22px;
-    }
-
-    .date-row {
-        grid-template-columns: 1fr;
-    }
-
-    .button-row {
-        grid-template-columns: 1fr;
-    }
-
-    .file-upload-label {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .page-title h1 {
-        font-size: 28px;
-    }
+#processStatus {
+  margin-top: 7px;
 }
 
-/* Footer */
+#status {
+  margin-top: 7px;
+}
+
+#matchingStatus {
+  margin-top: 7px;
+}
+
+#result {
+  margin-top: 7px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
 footer {
   background-color: #168d7f;
   color: white;
@@ -342,24 +387,94 @@ footer a:hover {
   text-decoration: underline;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 768px) {
+
+  .container {
+    width: 94%;
+    margin: 15px auto;
+  }
+
+  .tool-card {
+    padding: 15px;
+  }
+
+  .page-title {
+    margin-bottom: 10px;
+  }
+
+  .page-title h1 {
+    font-size: 23px;
+  }
+
+  .page-title p {
+    font-size: 12px;
+  }
+
+  .upload-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .file-upload-label {
+    padding: 14px 8px;
+  }
+
+  .upload-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 19px;
+  }
+
+  .upload-text strong {
+    font-size: 13px;
+  }
+
+  .upload-text span {
+    font-size: 11px;
+  }
+
+  .date-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .button-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 550px) {
+
   header {
     padding: 0 20px;
   }
 
   .container {
     width: 92%;
-    margin: 30px auto;
+    margin: 15px auto;
   }
 
   .tool-card {
-    padding: 22px;
+    padding: 14px;
+  }
+
+  .upload-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .date-row {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 10px;
   }
 
   .button-row {
@@ -367,6 +482,10 @@ footer a:hover {
   }
 
   .page-title h1 {
-    font-size: 25px;
+    font-size: 21px;
+  }
+
+  .page-title p {
+    font-size: 11px;
   }
 }
