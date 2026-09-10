@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
-
   <body>
     <header>
       <div class="left-section">
@@ -18,216 +17,111 @@
             style="width: 60%"
             class="logo-img" />
         </div>
-
         <div class="brand">
           <h1>Foree Business Tool</h1>
           <p>
-            Powered by<img
+            Powered by
+            <img
               src="https://foree.co/assets/img/wp-logo.png"
               alt="Logo"
               class="logo-img" />
           </p>
         </div>
       </div>
-
-      <nav class="navbar navbar-expand-lg navbar-dark">
-        <!-- Brand/Logo -->
-      </nav>
+      <nav class="navbar navbar-expand-lg navbar-dark"></nav>
     </header>
-
-  <main class="container">
-
-    <div class="page-title">
+    <main class="container">
+      <div class="page-title">
         <h1>Data Processing Tool</h1>
-        <p>Upload your files, select the time range, process, and match your data.</p>
-    </div>
-
-    <div class="tool-card">
-
+        <p>
+          Upload your files, select the time range, process, and match your
+          data.
+        </p>
+      </div>
+      <div class="tool-card">
+        <!-- ========================= -->
+        <!-- STEP 1 & 2 UPLOAD -->
+        <!-- ========================= -->
         <div class="upload-row">
-
-            <!-- CSV -->
-            <div class="upload-section">
-                <div class="section-title">
-                    Step 1 — Upload CSV File
+          <!-- CSV -->
+          <div class="upload-section">
+            <div class="section-title">Step 1 — Upload CSV File</div>
+            <div class="file-box">
+              <label for="fileInput" class="file-upload-label">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">
+                  <strong>Choose CSV file</strong> <span>CSV files only</span>
                 </div>
-
-                <div class="file-box">
-                    <label for="fileInput" class="file-upload-label">
-
-                        <div class="upload-icon">📁</div>
-
-                        <div class="upload-text">
-                            <strong>Choose CSV file</strong>
-                            <span>CSV files only</span>
-                        </div>
-
-                        <input
-                            type="file"
-                            id="fileInput"
-                            accept=".csv"
-                        >
-
-                    </label>
-                </div>
-
-                <div id="csvFileName" class="file-name">
-                    
-                </div>
+                <input type="file" id="fileInput" accept=".csv" />
+              </label>
             </div>
-
-
-            <!-- TXT -->
-            <div class="upload-section">
-                <div class="section-title">
-                    Step 2 — Upload TXT File
+            <!-- CSV uploaded file -->
+            <div id="csvFileName" class="file-name"></div>
+          </div>
+          <!-- TXT -->
+          <div class="upload-section">
+            <div class="section-title">Step 4 — Upload TXT File</div>
+            <div class="file-box">
+              <label for="folderInput" class="file-upload-label">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">
+                  <strong>Choose TXT files</strong> <span>TXT files only</span>
                 </div>
-
-                <div class="file-box">
-                    <label for="folderInput" class="file-upload-label">
-
-                        <div class="upload-icon">📄</div>
-
-                        <div class="upload-text">
-                            <strong>Choose TXT files</strong>
-                            <span>TXT files only</span>
-                        </div>
-
-                        <input
-                            type="file"
-                            id="folderInput"
-                            accept=".txt"
-                            multiple
-                        >
-
-                    </label>
-                </div>
-
-                <div id="txtFileName" class="file-name">
-                    
-                </div>
+                <input type="file" id="folderInput" accept=".txt" multiple />
+              </label>
             </div>
-
+            <!-- TXT uploaded files -->
+            <div id="txtFileName" class="file-name"></div>
+          </div>
         </div>
-
-
+        <!-- CSV RESULT -->
+        <div id="result" class="result-box">Upload files to begin...</div>
         <!-- DATE & TIME -->
-        <div class="section-title">
-            Step 3 — Select Date & Time Range
-        </div>
-
+        <div class="section-title">Step 2 — Select Date & Time Range</div>
         <div class="date-row">
-
-            <div class="input-group">
-                <label for="fromDateTime">From</label>
-
-                <input
-                    type="datetime-local"
-                    id="fromDateTime"
-                >
-            </div>
-
-            <div class="input-group">
-                <label for="toDateTime">To</label>
-
-                <input
-                    type="datetime-local"
-                    id="toDateTime"
-                >
-            </div>
-
+          <div class="input-group">
+            <label for="fromDateTime">From</label>
+            <input type="datetime-local" id="fromDateTime" />
+          </div>
+          <div class="input-group">
+            <label for="toDateTime">To</label>
+            <input type="datetime-local" id="toDateTime" />
+          </div>
         </div>
-
-
         <!-- PROCESS CSV -->
-        <div class="section-title">
-            Step 4 — Process CSV
-        </div>
-
+        <div class="section-title">Step 3 — Process CSV</div>
         <div class="button-row">
-
-            <button
-                type="button"
-                class="btn-t0"
-                onclick="processT0()">
-                Process File (T+0)
-            </button>
-
-            <button
-                type="button"
-                class="btn-t1"
-                onclick="processT1()">
-                Process File (T+1)
-            </button>
-
+          <button type="button" class="btn-t0" onclick="processT0()">
+            Process File (T+0)
+          </button>
+          <button type="button" class="btn-t1" onclick="processT1()">
+            Process File (T+1)
+          </button>
         </div>
-
-
-        <div
-            id="processStatus"
-            class="result-box"
-            style="display: none;">
-        </div>
-
-
+        <div id="processStatus" class="result-box" style="display: none"></div>
         <!-- TXT STATUS -->
-        <div
-            id="status"
-            class="result-box"
-            style="display: none;">
-        </div>
-
-
+        <div id="status" class="result-box" style="display: none"></div>
         <!-- MATCHING -->
-        <div class="section-title">
-            Step 5 — Matching
-        </div>
-
-        <div
-            id="matchingStatus"
-            class="result-box">
-
-            Waiting for files...
-
-        </div>
-
-
+        <div class="section-title">Step 5 — Matching</div>
+        <div id="matchingStatus" class="result-box">Waiting for files...</div>
         <!-- DOWNLOAD -->
-        <div class="section-title">
-            Step 6 — Results
-        </div>
-
+        <div class="section-title">Step 6 — Results</div>
         <div class="button-row">
-
-            <button
-                type="button"
-                class="btn-download"
-                onclick="downloadProcessedCSV()">
-                Download Processed CSV
-            </button>
-
-            <button
-                type="button"
-                class="btn-download"
-                onclick="downloadTXTExcel()">
-                Download TXT Excel
-            </button>
-
+          <button
+            type="button"
+            class="btn-download"
+            onclick="downloadProcessedCSV()">
+            Download Processed CSV
+          </button>
+          <button
+            type="button"
+            class="btn-download"
+            onclick="downloadTXTExcel()">
+            Download TXT Excel
+          </button>
         </div>
-
-
-        <div
-            id="result"
-            class="result-box">
-
-            Upload files to begin...
-
-        </div>
-
-    </div>
-
-</main>
-
+      </div>
+    </main>
     <footer>
       <div class="col-12 mb-4 mb-sm-0">
         <img
@@ -238,7 +132,6 @@
       </div>
       2025 © ForeePay (Private) Limited. All Rights Reserved.
     </footer>
-    
     <script src="./tool.js"></script>
   </body>
 </html>

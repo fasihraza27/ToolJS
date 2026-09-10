@@ -5,6 +5,38 @@ let processType = "t1";
 let txtExcelData = [];
 let txtFiles = [];
 
+// CSV file name display
+document
+  .getElementById("fileInput")
+  .addEventListener("change", function (event) {
+    const files = event.target.files;
+    const csvFileName = document.getElementById("csvFileName");
+    if (files.length === 0) {
+      csvFileName.textContent = "";
+      return;
+    }
+    if (files.length === 1) {
+      csvFileName.textContent = `Uploaded: ${files[0].name}`;
+    } else {
+      csvFileName.textContent = `Uploaded: ${files.length} CSV files`;
+    }
+  });
+
+document
+  .getElementById("folderInput")
+  .addEventListener("change", function (event) {
+    const files = event.target.files;
+
+    if (files.length > 0) {
+      document.getElementById("txtFileName").textContent =
+        files.length === 1
+          ? `Uploaded: ${files[0].name}`
+          : `Uploaded: ${files.length} TXT files`;
+    } else {
+      document.getElementById("txtFileName").textContent = "";
+    }
+  });
+
 document.getElementById("fileInput").addEventListener("change", readCSV);
 
 function readCSV(event) {
@@ -1068,7 +1100,7 @@ function matchData() {
         "",
         paymentRefId,
         "",
-        "Unmatched"
+        "Unmatched",
       ];
 
       txtExcelData.push(unmatchedRow);
