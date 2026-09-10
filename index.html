@@ -27,17 +27,20 @@
               class="logo-img" />
           </p>
         </div>
-      </div>
-      <nav class="navbar navbar-expand-lg navbar-dark"></nav>
-    </header>
-    <main class="container">
-      <div class="page-title">
+        <div class="page-title">
         <h1>Data Processing Tool</h1>
         <p>
           Upload your files, select the time range, process, and match your
           data.
         </p>
       </div>
+      </div>
+      <nav class="navbar navbar-expand-lg navbar-dark"></nav>
+    </header>
+
+
+    <main class="container">
+      
       <div class="tool-card">
         <!-- ========================= -->
         <!-- STEP 1 & 2 UPLOAD -->
@@ -90,7 +93,7 @@
         </div>
         <!-- PROCESS CSV -->
         <div class="section-title">Step 3 — Process CSV</div>
-        <div class="button-row">
+        <div class="button-row-process">
           <button type="button" class="btn-t0" onclick="processT0()">
             Process File (T+0)
           </button>
@@ -104,24 +107,41 @@
         <!-- MATCHING -->
         <div class="section-title">Step 5 — Matching</div>
         <div id="matchingStatus" class="result-box">Waiting for files...</div>
+        
         <!-- DOWNLOAD -->
-        <div class="section-title">Step 6 — Results</div>
-        <div class="button-row">
-          <button
-            type="button"
-            class="btn-download"
-            onclick="downloadProcessedCSV()">
-            Download Processed CSV
-          </button>
-          <button
-            type="button"
-            class="btn-download"
-            onclick="downloadTXTExcel()">
-            Download TXT Excel
-          </button>
-        </div>
-      </div>
+<div class="section-title ">Step 6 — Results</div>
+<div class="button-row row">
+  <button 
+    type="button"
+    class="col-md-3 btn-download"
+    onclick="downloadProcessedCSV()">
+    Download Processed CSV
+  </button>
+
+  <button
+    type="button"
+    class="col-md-3 btn-download"
+    onclick="downloadTXTExcel()">
+    Download TXT Excel
+  </button>
+
+  <button
+    type="button"
+    class="btn-download col-md-3"
+    onclick="downloadMatchedTXTExcel()">
+    Download Matched TXT
+  </button>
+
+  <button
+    type="button"
+    class="btn-download col-md-3"
+    onclick="downloadUnmatchedExcel()">
+    Download Unmatched
+  </button>
+</div>
     </main>
+
+
     <footer>
       <div class="col-12 mb-4 mb-sm-0">
         <img
