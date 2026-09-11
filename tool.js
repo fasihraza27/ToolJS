@@ -1009,11 +1009,9 @@ function normalizeAmount(value) {
   return Number(amount.toFixed(2));
 }
 
-
 // ============================================================
 // STEP 9 — MATCH DATA
 // ============================================================
-
 
 function matchData() {
   const matchingStatus = document.getElementById("matchingStatus");
@@ -1029,7 +1027,7 @@ function matchData() {
   }
 
   // ============================================================
-  // RESET PREVIOUS MATCH DATA
+  // RESET
   // ============================================================
 
   matchedTXTData = [];
@@ -1039,16 +1037,28 @@ function matchData() {
   // TXT HEADERS
   // ============================================================
 
-  const txtHeaders = txtExcelData[0].slice(0, 12);
+  const txtHeaders = [
+    "1Link prefix",
+    "Foree ID",
+    "Map Reference Number",
+    "Payer ID",
+    "Payer Branch",
+    "Amount",
+    "Date",
+    "Time",
+    "Payment Channel",
+    "Bank",
+    "Stan",
+    "Auth ID",
+    "Match OR Unmatch",
+  ];
 
   // ============================================================
   // CSV HEADERS
   // ============================================================
 
   const csvHeaders =
-    processedData.length > 0
-      ? Object.keys(processedData[0])
-      : [];
+    processedData.length > 0 ? Object.keys(processedData[0]) : [];
 
   // ============================================================
   // CREATE CSV LOOKUP
@@ -1057,25 +1067,15 @@ function matchData() {
   const processedLookup = new Map();
 
   processedData.forEach((row) => {
-    const paymentRefId = normalizeMatchValue(
-      row["Payment Ref ID"]
-    );
+    const paymentRefId = normalizeMatchValue(row["Payment Ref ID"]);
 
-    const paidByCustomer = normalizeAmount(
-      row["Paid By Customer"]
-    );
+    const paidByCustomer = normalizeAmount(row["Paid By Customer"]);
 
-    if (
-      paymentRefId === "" ||
-      paidByCustomer === null
-    ) {
+    if (paymentRefId === "" || paidByCustomer === null) {
       return;
     }
 
-    const key =
-      paymentRefId +
-      "|" +
-      paidByCustomer;
+    const key = paymentRefId + "|" + paidByCustomer;
 
     if (!processedLookup.has(key)) {
       processedLookup.set(key, []);
@@ -1091,22 +1091,15 @@ function matchData() {
   const matchedCSV = new Set();
 
   // ============================================================
-  // MATCHED TXT FILE
+  // HEADERS
   // ============================================================
 
-  matchedTXTData = [
-    ...txtHeaders,
-    "Match OR Unmatch",
-  ];
-
-  // ============================================================
-  // UNMATCHED FILE HEADERS
-  // ============================================================
+  matchedTXTData = [txtHeaders];
 
   const unmatchedHeaders = [
     ...csvHeaders.map((header) => "CSV - " + header),
+
     ...txtHeaders.map((header) => "TXT - " + header),
-    "Match OR Unmatch",
   ];
 
   unmatchedData = [unmatchedHeaders];
@@ -1120,38 +1113,53 @@ function matchData() {
   let unmatchedCSV = 0;
 
   // ============================================================
-  // CHECK EVERY TXT ROW
+  // CHECK EVERY TXT TRANSACTION
   // ============================================================
 
   for (let i = 1; i < txtExcelData.length; i++) {
     const txtRow = txtExcelData[i];
 
-    const stan = normalizeMatchValue(txtRow[10]);
+    // Make sure TXT row has 12 values
+    const cleanTXTRow = [...txtRow.slice(0, 12)];
 
-    const amount = normalizeAmount(txtRow[5]);
+    while (cleanTXTRow.length < 12) {
+      cleanTXTRow.push("");
+    }
 
-    const key =
-      stan +
-      "|" +
-      (amount === null ? "" : amount);
+    // ==========================================================
+    // GET STAN
+    // ==========================================================
+
+    const stan = normalizeMatchValue(cleanTXTRow[10]);
+
+    // ==========================================================
+    // GET AMOUNT
+    // ==========================================================
+
+    const amount = normalizeAmount(cleanTXTRow[5]);
+
+    // ==========================================================
+    // CREATE MATCH KEY
+    // ==========================================================
+
+    const key = stan + "|" + (amount === null ? "" : amount);
 
     // ==========================================================
     // MATCH FOUND
     // ==========================================================
 
-    if (
-      processedLookup.has(key) &&
-      processedLookup.get(key).length > 0
-    ) {
-      const csvRow =
-        processedLookup.get(key).shift();
+    if (processedLookup.has(key) && processedLookup.get(key).length > 0) {
+      const csvRow = processedLookup.get(key).shift();
 
       matchedCSV.add(csvRow);
 
-      matchedTXTData.push([
-        ...txtRow.slice(0, 12),
-        "Matched",
-      ]);
+      // Add status directly to TXT row
+      const matchedRow = [...cleanTXTRow, "Matched"];
+
+      matchedTXTData.push(matchedRow);
+
+      // Also update original TXT data
+      txtExcelData[i] = [...cleanTXTRow, "Matched"];
 
       matched++;
 
@@ -1159,18 +1167,20 @@ function matchData() {
     }
 
     // ==========================================================
-    // TXT SIDE UNMATCHED
+    // TXT UNMATCHED
     // ==========================================================
 
-    unmatchedTXT++;
+    const unmatchedTXTRow = [...cleanTXTRow, "Unmatched"];
 
+    // Update original TXT data
+    txtExcelData[i] = unmatchedTXTRow;
+
+    // CSV side empty
     const emptyCSV = csvHeaders.map(() => "");
 
-    unmatchedData.push([
-      ...emptyCSV,
-      ...txtRow.slice(0, 12),
-      "Unmatched",
-    ]);
+    unmatchedData.push([...emptyCSV, ...cleanTXTRow, "Unmatched"]);
+
+    unmatchedTXT++;
   }
 
   // ============================================================
@@ -1182,75 +1192,25 @@ function matchData() {
       return;
     }
 
-    unmatchedCSV++;
+    // ========================================================
+    // CSV UNMATCHED
+    // ========================================================
 
-    // Create CSV values in the exact CSV header order
-    const csvValues = csvHeaders.map((header) => {
-      return csvRow[header] ?? "";
-    });
+    const csvValues = csvHeaders.map((header) => csvRow[header] ?? "");
 
     // Empty TXT side
-    const emptyTXT = txtHeaders.map(() => "");
+    const emptyTXT = txtHeaders.slice(0, 12).map(() => "");
 
-    unmatchedData.push([
-      ...csvValues,
-      ...emptyTXT,
-      "Unmatched",
-    ]);
+unmatchedData.push([...csvValues, ...emptyTXT, "Unmatched"]);
+
+    unmatchedCSV++;
   });
 
   // ============================================================
-  // UPDATE TXT ORIGINAL DATA STATUS
+  // MAKE SURE ALL TXT ROWS HAVE STATUS
   // ============================================================
 
-  txtExcelData[0][12] = "Match OR Unmatch";
-
-  for (let i = 1; i < txtExcelData.length; i++) {
-    const txtRow = txtExcelData[i];
-
-    const stan = normalizeMatchValue(txtRow[10]);
-
-    const amount = normalizeAmount(txtRow[5]);
-
-    const key =
-      stan +
-      "|" +
-      (amount === null ? "" : amount);
-
-    /*
-      We don't use the lookup here to determine the status
-      because matched records were already removed from it.
-      Instead, matchedTXTData contains the matched TXT rows.
-    */
-
-    let isMatched = false;
-
-    for (let j = 1; j < matchedTXTData.length; j++) {
-      const matchedRow = matchedTXTData[j];
-
-      const matchedStan =
-        normalizeMatchValue(matchedRow[10]);
-
-      const matchedAmount =
-        normalizeAmount(matchedRow[5]);
-
-      const matchedKey =
-        matchedStan +
-        "|" +
-        (matchedAmount === null
-          ? ""
-          : matchedAmount);
-
-      if (matchedKey === key) {
-        isMatched = true;
-        break;
-      }
-    }
-
-    txtRow[12] = isMatched
-      ? "Matched"
-      : "Unmatched";
-  }
+  txtExcelData[0] = txtHeaders;
 
   // ============================================================
   // SHOW RESULT
@@ -1265,7 +1225,6 @@ function matchData() {
     `Unmatched CSV: ${unmatchedCSV}<br>` +
     `Total unmatched: ${unmatchedTXT + unmatchedCSV}`;
 }
-
 
 // ============================================================
 // STEP 10 — DOWNLOAD PROCESSED CSV
@@ -1308,201 +1267,337 @@ function downloadProcessedCSV() {
 }
 
 // ============================================================
-// STEP 11 — DOWNLOAD TXT EXCEL
+// STEP 11 — DOWNLOAD COMPLETE TXT EXCEL REPORT
 // ============================================================
 
 function downloadTXTExcel() {
+  console.log("DOWNLOAD TXT REPORT");
+
   if (!txtExcelData || txtExcelData.length <= 1) {
     alert("Please upload TXT files first.");
-
     return;
   }
 
-  const worksheet = XLSX.utils.aoa_to_sheet(txtExcelData);
+  try {
+    const workbook = XLSX.utils.book_new();
 
-  worksheet["!cols"] = [
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 25 },
-    { wch: 20 },
-    { wch: 25 },
-    { wch: 18 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 20 },
-    { wch: 35 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 18 },
-  ];
+    // ==========================================================
+    // TXT HEADERS
+    // ==========================================================
 
-  const workbook = XLSX.utils.book_new();
+    const txtHeaders = [
+      "1Link prefix",
+      "Foree ID",
+      "Map Reference Number",
+      "Payer ID",
+      "Payer Branch",
+      "Amount",
+      "Date",
+      "Time",
+      "Payment Channel",
+      "Bank",
+      "Stan",
+      "Auth ID",
+      "Match OR Unmatch",
+    ];
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Transaction Data");
+    // ==========================================================
+    // CSV HEADERS
+    // ==========================================================
 
-  // ==========================================================
-  // FILE NAME
-  // ==========================================================
+    const csvHeaders =
+      processedData.length > 0 ? Object.keys(processedData[0]) : [];
 
-  const now = new Date();
+    const csvColumnCount = csvHeaders.length;
 
-  const year = now.getFullYear();
+    // ==========================================================
+    // GET STAN + AUTH ID FROM MAP REFERENCE NUMBER
+    // ==========================================================
 
-  const month = String(now.getMonth() + 1).padStart(2, "0");
+    function getStanAndAuth(reference) {
+      const value = String(reference ?? "").trim();
 
-  const day = String(now.getDate()).padStart(2, "0");
+      if (!value) {
+        return {
+          stan: "",
+          authId: "",
+        };
+      }
 
-  const hour = String(now.getHours()).padStart(2, "0");
+      // Get the last 12 digits
+      const last12 = value.slice(-12);
 
-  const minute = String(now.getMinutes()).padStart(2, "0");
+      // First 6 of the last 12 = STAN
+      const stan = last12.slice(0, 6);
 
-  const second = String(now.getSeconds()).padStart(2, "0");
+      // Last 6 of the last 12 = Auth ID
+      const authId = last12.slice(6, 12);
 
-  const fileName =
-    `TXT_Report_` + `${year}${month}${day}_` + `${hour}${minute}${second}.xlsx`;
+      return {
+        stan: stan,
+        authId: authId,
+      };
+    }
 
-  // ==========================================================
-  // DOWNLOAD
-  // ==========================================================
+    // ==========================================================
+    // SHEET 1 — ALL TRANSACTIONS
+    // ==========================================================
 
-  XLSX.writeFile(workbook, fileName);
-}
+    const allTransactions = [];
+
+    allTransactions.push(txtHeaders);
+
+    // ==========================================================
+    // ADD ALL MATCHED TXT TRANSACTIONS
+    // ==========================================================
+
+    for (let i = 1; i < matchedTXTData.length; i++) {
+      const row = matchedTXTData[i];
+
+      if (!Array.isArray(row) || row.length === 0) {
+        continue;
+      }
+
+      const txtRow = [...row.slice(0, 12)];
+
+      // Map Reference Number
+      const reference = txtRow[2];
+
+      const result = getStanAndAuth(reference);
+
+      // First 6 of last 12 = STAN
+      txtRow[10] = result.stan;
+
+      // Last 6 of last 12 = Auth ID
+      txtRow[11] = result.authId;
+
+      allTransactions.push([...txtRow, "Matched"]);
+    }
+
+    // ==========================================================
+    // ADD ALL UNMATCHED TRANSACTIONS
+    // ==========================================================
+
+    for (let i = 1; i < unmatchedData.length; i++) {
+      const row = unmatchedData[i];
+
+      if (!Array.isArray(row)) {
+        continue;
+      }
+
+      // TXT section starts after CSV columns
+      const txtStart = csvColumnCount;
+
+      // Get 12 TXT fields
+      const txtPart = row.slice(txtStart, txtStart + 12);
+
+      // Check if TXT data exists
+      const hasTXTData = txtPart.some(
+        (value) =>
+          value !== null && value !== undefined && String(value).trim() !== "",
+      );
+
+      // ========================================================
+      // TXT-ONLY UNMATCHED
+      // ========================================================
+
+      if (hasTXTData) {
+        const txtRow = [...txtPart];
+
+        // Map Reference Number
+        const reference = txtRow[2];
+
+        const result = getStanAndAuth(reference);
+
+        // First 6 of last 12 = STAN
+        txtRow[10] = result.stan;
+
+        // Last 6 of last 12 = Auth ID
+        txtRow[11] = result.authId;
+
+        allTransactions.push([...txtRow, "Unmatched"]);
+
+        continue;
+      }
+
+      // ========================================================
+      // CSV-ONLY UNMATCHED
+      // ========================================================
+
+      const csvValues = row.slice(0, csvColumnCount);
+
+      const csvRow = {};
+
+      csvHeaders.forEach((header, index) => {
+        csvRow[header] = csvValues[index] ?? "";
+      });
+
+      // Payment Ref ID is used as STAN in matching
+      const stan = csvRow["Payment Ref ID"] ?? "";
+
+      // Paid By Customer is used as Amount
+      const amount = csvRow["Paid By Customer"] ?? "";
+      
+      const bank = csvRow["Instrument Institution"] ?? "";
+      
+      const authId = csvRow["Payment Ref ID"] ?? "";
 
 
-// ============================================================
-// STEP 12 — DOWNLOAD MATCHED TXT EXCEL
-// ============================================================
+      // Add CSV-only transaction
+      allTransactions.push([
+        "",
+        "",
+        "",
+        "",
+        "",
+        amount,
+        "",
+        "",
+        "",
+        bank,
+        stan,
+        authId,
+        "Unmatched",
+      ]);
+    }
 
-function downloadMatchedTXTExcel() {
-  if (!matchedTXTData || matchedTXTData.length <= 1) {
-    alert("No matched TXT records available.");
+    // ==========================================================
+    // CREATE ALL TRANSACTIONS SHEET
+    // ==========================================================
 
-    return;
-  }
+    const allWorksheet = XLSX.utils.aoa_to_sheet(allTransactions);
 
-  const worksheet =
-    XLSX.utils.aoa_to_sheet(matchedTXTData);
+    XLSX.utils.book_append_sheet(workbook, allWorksheet, "All Transactions");
 
-  worksheet["!cols"] = [
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 25 },
-    { wch: 20 },
-    { wch: 25 },
-    { wch: 18 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 20 },
-    { wch: 35 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 18 },
-  ];
+    // ==========================================================
+    // SHEET 2 — MATCHED
+    // ==========================================================
 
-  const workbook = XLSX.utils.book_new();
+    const matchedTransactions = matchedTXTData.map((row) =>
+      Array.isArray(row) ? row : [row],
+    );
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Matched Transactions"
-  );
+    const matchedWorksheet = XLSX.utils.aoa_to_sheet(
+      matchedTransactions.length > 0 ? matchedTransactions : [txtHeaders],
+    );
 
-  const now = new Date();
+    XLSX.utils.book_append_sheet(workbook, matchedWorksheet, "Matched");
 
-  const year = now.getFullYear();
+    // ==========================================================
+    // SHEET 3 — UNMATCHED
+    // ==========================================================
 
-  const month = String(
-    now.getMonth() + 1
-  ).padStart(2, "0");
+    const unmatchedTransactions = unmatchedData.map((row) =>
+      Array.isArray(row) ? row : [row],
+    );
 
-  const day = String(
-    now.getDate()
-  ).padStart(2, "0");
+    const unmatchedWorksheet = XLSX.utils.aoa_to_sheet(
+      unmatchedTransactions.length > 0
+        ? unmatchedTransactions
+        : [["No unmatched transactions"]],
+    );
 
-  const hour = String(
-    now.getHours()
-  ).padStart(2, "0");
+    XLSX.utils.book_append_sheet(workbook, unmatchedWorksheet, "Unmatched");
 
-  const minute = String(
-    now.getMinutes()
-  ).padStart(2, "0");
+    // ==========================================================
+    // COLUMN WIDTHS — ALL TRANSACTIONS
+    // ==========================================================
 
-  const second = String(
-    now.getSeconds()
-  ).padStart(2, "0");
+    allWorksheet["!cols"] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 18 },
+    ];
 
-  const fileName =
-    `Matched_TXT_Report_` +
-    `${year}${month}${day}_` +
-    `${hour}${minute}${second}.xlsx`;
+    // ==========================================================
+    // COLUMN WIDTHS — MATCHED
+    // ==========================================================
 
-  XLSX.writeFile(workbook, fileName);
-}
+    matchedWorksheet["!cols"] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 18 },
+    ];
 
+    // ==========================================================
+    // COLUMN WIDTHS — UNMATCHED
+    // ==========================================================
 
-// ============================================================
-// STEP 13 — DOWNLOAD UNMATCHED EXCEL
-// ============================================================
+    const unmatchedColumnCount =
+      unmatchedTransactions.length > 0 ? unmatchedTransactions[0].length : 1;
 
-function downloadUnmatchedExcel() {
-  if (!unmatchedData || unmatchedData.length <= 1) {
-    alert("No unmatched records available.");
+    unmatchedWorksheet["!cols"] = Array.from(
+      {
+        length: unmatchedColumnCount,
+      },
+      () => ({
+        wch: 25,
+      }),
+    );
 
-    return;
-  }
+    // ==========================================================
+    // CREATE XLSX
+    // ==========================================================
 
-  const worksheet =
-    XLSX.utils.aoa_to_sheet(unmatchedData);
-
-  // Make columns wider
-  const totalColumns =
-    unmatchedData[0].length;
-
-  worksheet["!cols"] = [];
-
-  for (let i = 0; i < totalColumns; i++) {
-    worksheet["!cols"].push({
-      wch: 25,
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
     });
+
+    // ==========================================================
+    // CREATE BLOB
+    // ==========================================================
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    // ==========================================================
+    // DOWNLOAD
+    // ==========================================================
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "TXT_Report.xlsx";
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    console.log("TXT_Report.xlsx downloaded");
+  } catch (error) {
+    console.error("TXT Excel Download Error:", error);
+
+    alert("Unable to download TXT Report.\n\n" + error.message);
   }
-
-  const workbook = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Unmatched Transactions"
-  );
-
-  const now = new Date();
-
-  const year = now.getFullYear();
-
-  const month = String(
-    now.getMonth() + 1
-  ).padStart(2, "0");
-
-  const day = String(
-    now.getDate()
-  ).padStart(2, "0");
-
-  const hour = String(
-    now.getHours()
-  ).padStart(2, "0");
-
-  const minute = String(
-    now.getMinutes()
-  ).padStart(2, "0");
-
-  const second = String(
-    now.getSeconds()
-  ).padStart(2, "0");
-
-  const fileName =
-    `Unmatched_Report_` +
-    `${year}${month}${day}_` +
-    `${hour}${minute}${second}.xlsx`;
-
-  XLSX.writeFile(workbook, fileName);
 }
-
