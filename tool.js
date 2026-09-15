@@ -4,6 +4,7 @@ let t0Businesses = new Map();
 let processType = "t1";
 let txtExcelData = [];
 let txtFiles = [];
+let matchedCSV = new Set();
 let matchedTXTData = [];
 let unmatchedData = [];
 
@@ -1057,8 +1058,60 @@ function matchData() {
   // CSV HEADERS
   // ============================================================
 
-  const csvHeaders =
-    processedData.length > 0 ? Object.keys(processedData[0]) : [];
+  const csvHeaders = [
+    "Payment ID",
+    "Bill Creation Date",
+    "Bill Due Date",
+    "Transaction Date Time",
+    "Initiator Settlement Date",
+    "Initiator Settlement Status",
+    "Currency Code",
+    "Terminal ID",
+    "Consumer Reference Number",
+    "Mapped Consumer Reference Number",
+    "Fee Charging Type",
+    "Bill Status",
+    "Instrument Type",
+    "Instrument No",
+    "Instrument Institution",
+    "Payment Channel",
+    "Business Acquirer",
+    "Payment Ref ID",
+    "RRN",
+    "Initiator",
+    "Initiator Fee",
+    "Tax On Initiator Fee",
+    "Foree ID",
+    "Business Name",
+    "Sub Business Name",
+    "Amount Within Due Date",
+    "Amount After Due Date",
+    "Applicable Amount",
+    "Payable Amount By Customer",
+    "Discounted Payable Amount",
+    "Discount Applied",
+    "Offer ID",
+    "User Credits Account ID",
+    "Paid By Customer",
+    "MCC",
+    "Applicable SOC",
+    "Fee",
+    "Foree Share",
+    "Tax on Foree Share",
+    "Bank Share",
+    "Tax on Bank Share",
+    "Tax on Fee",
+    "Other Income",
+    "Settlement Amount To Biller/Acquirer",
+    "Settlement Amount To Foree",
+    "Bill Expiry Date",
+    "Biller Settlement Status",
+    "Biller Settlement Date",
+    "Settlement Institution",
+    "Settlement Batch ID",
+    "Biller Actual Settlement Date Time",
+    "Product Name",
+  ];
 
   // ============================================================
   // CREATE CSV LOOKUP
@@ -1088,7 +1141,7 @@ function matchData() {
   // TRACK MATCHED CSV ROWS
   // ============================================================
 
-  const matchedCSV = new Set();
+  matchedCSV = new Set();
 
   // ============================================================
   // HEADERS
@@ -1305,13 +1358,65 @@ function downloadTXTExcel() {
     // CSV HEADERS
     // ==========================================================
 
-    const csvHeaders =
-      processedData.length > 0 ? Object.keys(processedData[0]) : [];
+    const csvHeaders = [
+      "Payment ID",
+      "Bill Creation Date",
+      "Bill Due Date",
+      "Transaction Date Time",
+      "Initiator Settlement Date",
+      "Initiator Settlement Status",
+      "Currency Code",
+      "Terminal ID",
+      "Consumer Reference Number",
+      "Mapped Consumer Reference Number",
+      "Fee Charging Type",
+      "Bill Status",
+      "Instrument Type",
+      "Instrument No",
+      "Instrument Institution",
+      "Payment Channel",
+      "Business Acquirer",
+      "Payment Ref ID",
+      "RRN",
+      "Initiator",
+      "Initiator Fee",
+      "Tax On Initiator Fee",
+      "Foree ID",
+      "Business Name",
+      "Sub Business Name",
+      "Amount Within Due Date",
+      "Amount After Due Date",
+      "Applicable Amount",
+      "Payable Amount By Customer",
+      "Discounted Payable Amount",
+      "Discount Applied",
+      "Offer ID",
+      "User Credits Account ID",
+      "Paid By Customer",
+      "MCC",
+      "Applicable SOC",
+      "Fee",
+      "Foree Share",
+      "Tax on Foree Share",
+      "Bank Share",
+      "Tax on Bank Share",
+      "Tax on Fee",
+      "Other Income",
+      "Settlement Amount To Biller/Acquirer",
+      "Settlement Amount To Foree",
+      "Bill Expiry Date",
+      "Biller Settlement Status",
+      "Biller Settlement Date",
+      "Settlement Institution",
+      "Settlement Batch ID",
+      "Biller Actual Settlement Date Time",
+      "Product Name",
+    ];
 
     const csvColumnCount = csvHeaders.length;
 
     // ==========================================================
-    // GET STAN + AUTH ID FROM MAP REFERENCE NUMBER
+    // GET STAN + AUTH ID
     // ==========================================================
 
     function getStanAndAuth(reference) {
@@ -1327,7 +1432,6 @@ function downloadTXTExcel() {
       const last12 = value.slice(-12);
 
       const stan = last12.slice(0, 6);
-
       const authId = last12.slice(6, 12);
 
       return {
@@ -1342,44 +1446,26 @@ function downloadTXTExcel() {
 
     const allTransactions = [];
 
-    allTransactions.push(txtHeaders);
+    allTransactions.push([...csvHeaders, "Match OR Unmatch"]);
 
     // ==========================================================
-    // ADD ALL MATCHED TXT TRANSACTIONS
+    // ADD EVERY CSV ROW
     // ==========================================================
 
-    for (let i = 1; i < matchedTXTData.length; i++) {
-      const row = matchedTXTData[i];
-
-      if (!Array.isArray(row) || row.length === 0) {
-        continue;
-      }
-
-      const txtRow = [...row.slice(0, 12)];
-
-      while (txtRow.length < 12) {
-        txtRow.push("");
-      }
-
-      const reference = txtRow[2];
-
-      const result = getStanAndAuth(reference);
-
-      txtRow[10] = result.stan;
-      txtRow[11] = result.authId;
-
-      allTransactions.push([...txtRow, "Matched"]);
-    }
+    processedData.forEach((csvRow) => {
+      const csvValues = csvHeaders.map((header) => csvRow[header] ?? "");
+      const status = matchedCSV.has(csvRow) ? "Matched" : "Unmatched";
+      allTransactions.push([...csvValues, status]);
+    });
 
     // ==========================================================
     // SEPARATE UNMATCHED SHEETS
     // ==========================================================
 
     const unmatchedCSVTransactions = [];
-
     const unmatchedTXTTransactions = [];
 
-    unmatchedCSVTransactions.push(csvHeaders);
+    unmatchedCSVTransactions.push([...csvHeaders, "Match OR Unmatch"]);
 
     unmatchedTXTTransactions.push(txtHeaders);
 
@@ -1394,10 +1480,6 @@ function downloadTXTExcel() {
         continue;
       }
 
-      // ========================================================
-      // TXT PART
-      // ========================================================
-
       const txtStart = csvColumnCount;
 
       const txtPart = row.slice(txtStart, txtStart + 12);
@@ -1406,10 +1488,6 @@ function downloadTXTExcel() {
         (value) =>
           value !== null && value !== undefined && String(value).trim() !== "",
       );
-
-      // ========================================================
-      // CSV PART
-      // ========================================================
 
       const csvPart = row.slice(0, csvColumnCount);
 
@@ -1434,16 +1512,33 @@ function downloadTXTExcel() {
         const result = getStanAndAuth(reference);
 
         txtRow[10] = result.stan;
-
         txtRow[11] = result.authId;
 
         const finalTXTRow = [...txtRow, "Unmatched"];
 
-        // Add to UnmatchedTXT sheet
         unmatchedTXTTransactions.push(finalTXTRow);
 
-        // Also add to All Transactions
-        allTransactions.push(finalTXTRow);
+        // ======================================================
+        // TXT-ONLY ROW IN ALL TRANSACTIONS
+        // ======================================================
+
+        const txtOnlyRow = csvHeaders.map(() => "");
+
+        const setCSVValue = (header, value) => {
+          const index = csvHeaders.indexOf(header);
+
+          if (index !== -1) {
+            txtOnlyRow[index] = value ?? "";
+          }
+        };
+
+        setCSVValue("Foree ID", txtRow[1]);
+        setCSVValue("Payment Channel", txtRow[8]);
+        setCSVValue("Instrument Institution", txtRow[9]);
+        setCSVValue("Paid By Customer", txtRow[5]);
+        setCSVValue("Payment Ref ID", txtRow[10]);
+
+        allTransactions.push([...txtOnlyRow, "Unmatched"]);
       }
 
       // ========================================================
@@ -1451,50 +1546,15 @@ function downloadTXTExcel() {
       // ========================================================
 
       if (hasCSVData) {
-        const csvValues = [];
+        const csvValues = csvHeaders.map(
+          (header, index) => csvPart[index] ?? "",
+        );
 
-        csvHeaders.forEach((header, index) => {
-          csvValues.push(csvPart[index] ?? "");
-        });
+        // Add ONLY to the Unmatched CSV sheet.
+        // The CSV row is already present in All Transactions
+        // from the processedData.forEach() above.
 
-        // Add CSV row to UnmatchedCSV sheet
-        unmatchedCSVTransactions.push(csvValues);
-
-        // ======================================================
-        // CREATE CSV-ONLY VERSION FOR ALL TRANSACTIONS
-        // ======================================================
-
-        const csvRow = {};
-
-        csvHeaders.forEach((header, index) => {
-          csvRow[header] = csvPart[index] ?? "";
-        });
-
-        const amount = csvRow["Paid By Customer"] ?? "";
-
-        const bank = csvRow["Instrument Institution"] ?? "";
-
-        const stan = csvRow["Payment Ref ID"] ?? "";
-
-        const authId = csvRow["Payment Ref ID"] ?? "";
-
-        const csvOnlyTXTFormat = [
-          "",
-          "",
-          "",
-          "",
-          "",
-          amount,
-          "",
-          "",
-          "",
-          bank,
-          stan,
-          authId,
-          "Unmatched",
-        ];
-
-        allTransactions.push(csvOnlyTXTFormat);
+        unmatchedCSVTransactions.push([...csvValues, "Unmatched"]);
       }
     }
 
@@ -1504,7 +1564,55 @@ function downloadTXTExcel() {
 
     const allWorksheet = XLSX.utils.aoa_to_sheet(allTransactions);
 
-    XLSX.utils.book_append_sheet(workbook, allWorksheet, "All Transactions");
+    XLSX.utils.book_append_sheet(workbook, allWorksheet, "Settlement-report");
+
+
+  // ==========================================================
+// SHEET 2 — MATCHED CSV
+// ==========================================================
+
+const matchedCSVTransactions = [
+  ...csvHeaders,
+  "Match OR Unmatch"
+];
+
+const matchedCSVRows = [matchedCSVTransactions];
+
+processedData.forEach((csvRow) => {
+  if (matchedCSV.has(csvRow)) {
+    const csvValues = csvHeaders.map(
+      (header) => csvRow[header] ?? ""
+    );
+
+    matchedCSVRows.push([
+      ...csvValues,
+      "Matched"
+    ]);
+  }
+});
+
+const matchedCSVWorksheet =
+  XLSX.utils.aoa_to_sheet(matchedCSVRows);
+
+XLSX.utils.book_append_sheet(
+  workbook,
+  matchedCSVWorksheet,
+  "MatchedCSV"
+);
+
+matchedCSVWorksheet["!cols"] = csvHeaders.map(
+  (header) => ({
+    wch: Math.max(
+      15,
+      Math.min(35, String(header).length + 2)
+    )
+  })
+);
+
+matchedCSVWorksheet["!cols"].push({
+  wch: 18
+});
+
 
     // ==========================================================
     // SHEET 2 — MATCHED
@@ -1518,7 +1626,7 @@ function downloadTXTExcel() {
       matchedTransactions.length > 0 ? matchedTransactions : [txtHeaders],
     );
 
-    XLSX.utils.book_append_sheet(workbook, matchedWorksheet, "Matched");
+    XLSX.utils.book_append_sheet(workbook, matchedWorksheet, "MatchedTXT");
 
     // ==========================================================
     // SHEET 3 — UNMATCHED CSV
@@ -1556,21 +1664,13 @@ function downloadTXTExcel() {
     // COLUMN WIDTHS — ALL TRANSACTIONS
     // ==========================================================
 
-    allWorksheet["!cols"] = [
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 25 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 18 },
-    ];
+    allWorksheet["!cols"] = csvHeaders.map((header) => ({
+      wch: Math.max(15, Math.min(35, String(header).length + 2)),
+    }));
+
+    allWorksheet["!cols"].push({
+      wch: 18,
+    });
 
     // ==========================================================
     // COLUMN WIDTHS — MATCHED
@@ -1596,17 +1696,13 @@ function downloadTXTExcel() {
     // COLUMN WIDTHS — UNMATCHED CSV
     // ==========================================================
 
-    unmatchedCSVWorksheet["!cols"] = Array.from(
-      {
-        length:
-          unmatchedCSVTransactions.length > 0
-            ? unmatchedCSVTransactions[0].length
-            : 1,
-      },
-      () => ({
-        wch: 25,
-      }),
-    );
+    unmatchedCSVWorksheet["!cols"] = csvHeaders.map(() => ({
+      wch: 25,
+    }));
+
+    unmatchedCSVWorksheet["!cols"].push({
+      wch: 18,
+    });
 
     // ==========================================================
     // COLUMN WIDTHS — UNMATCHED TXT
@@ -1637,26 +1733,16 @@ function downloadTXTExcel() {
       type: "array",
     });
 
-    // ==========================================================
-    // CREATE BLOB
-    // ==========================================================
-
     const blob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-
-    // ==========================================================
-    // DOWNLOAD
-    // ==========================================================
 
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
 
     link.href = url;
-
     link.download = "TXT_Report.xlsx";
-
     link.style.display = "none";
 
     document.body.appendChild(link);
