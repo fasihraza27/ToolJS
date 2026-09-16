@@ -617,6 +617,7 @@ async function processT0() {
           newRow["Initiator Settlement Date"],
         );
       }
+      newRow["Initiator Settlement Status"] = "settled";
 
       const business = t0Businesses.get(String(newRow["Foree ID"]));
 
@@ -685,6 +686,7 @@ function processT1() {
         newRow["Initiator Settlement Date"],
       );
     }
+    newRow["Initiator Settlement Status"] = "settled";
 
     const amount = Number(newRow["Applicable Amount"]) || 0;
 
@@ -1280,46 +1282,6 @@ function matchData() {
 }
 
 // ============================================================
-// STEP 10 — DOWNLOAD PROCESSED CSV
-// ============================================================
-
-function downloadProcessedCSV() {
-  if (!processedData || processedData.length === 0) {
-    alert("Please process the CSV file first.");
-
-    return;
-  }
-
-  const worksheet = XLSX.utils.json_to_sheet(processedData);
-
-  const csv = XLSX.utils.sheet_to_csv(worksheet);
-
-  const blob = new Blob([csv], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-
-  link.href = url;
-
-  if (processType === "t0") {
-    link.download = "processed_settlement_report_t0.csv";
-  } else {
-    link.download = "processed_settlement_report_t1.csv";
-  }
-
-  document.body.appendChild(link);
-
-  link.click();
-
-  document.body.removeChild(link);
-
-  URL.revokeObjectURL(url);
-}
-
-// ============================================================
 // STEP 11 — DOWNLOAD COMPLETE TXT EXCEL REPORT
 // ============================================================
 
@@ -1566,53 +1528,33 @@ function downloadTXTExcel() {
 
     XLSX.utils.book_append_sheet(workbook, allWorksheet, "Settlement-report");
 
+    // ==========================================================
+    // SHEET 2 — MATCHED CSV
+    // ==========================================================
 
-  // ==========================================================
-// SHEET 2 — MATCHED CSV
-// ==========================================================
+    const matchedCSVTransactions = [...csvHeaders, "Match OR Unmatch"];
 
-const matchedCSVTransactions = [
-  ...csvHeaders,
-  "Match OR Unmatch"
-];
+    const matchedCSVRows = [matchedCSVTransactions];
 
-const matchedCSVRows = [matchedCSVTransactions];
+    processedData.forEach((csvRow) => {
+      if (matchedCSV.has(csvRow)) {
+        const csvValues = csvHeaders.map((header) => csvRow[header] ?? "");
 
-processedData.forEach((csvRow) => {
-  if (matchedCSV.has(csvRow)) {
-    const csvValues = csvHeaders.map(
-      (header) => csvRow[header] ?? ""
-    );
+        matchedCSVRows.push([...csvValues, "Matched"]);
+      }
+    });
 
-    matchedCSVRows.push([
-      ...csvValues,
-      "Matched"
-    ]);
-  }
-});
+    const matchedCSVWorksheet = XLSX.utils.aoa_to_sheet(matchedCSVRows);
 
-const matchedCSVWorksheet =
-  XLSX.utils.aoa_to_sheet(matchedCSVRows);
+    XLSX.utils.book_append_sheet(workbook, matchedCSVWorksheet, "MatchedCSV");
 
-XLSX.utils.book_append_sheet(
-  workbook,
-  matchedCSVWorksheet,
-  "MatchedCSV"
-);
+    matchedCSVWorksheet["!cols"] = csvHeaders.map((header) => ({
+      wch: Math.max(15, Math.min(35, String(header).length + 2)),
+    }));
 
-matchedCSVWorksheet["!cols"] = csvHeaders.map(
-  (header) => ({
-    wch: Math.max(
-      15,
-      Math.min(35, String(header).length + 2)
-    )
-  })
-);
-
-matchedCSVWorksheet["!cols"].push({
-  wch: 18
-});
-
+    matchedCSVWorksheet["!cols"].push({
+      wch: 18,
+    });
 
     // ==========================================================
     // SHEET 2 — MATCHED
@@ -1742,7 +1684,7 @@ matchedCSVWorksheet["!cols"].push({
     const link = document.createElement("a");
 
     link.href = url;
-    link.download = "TXT_Report.xlsx";
+    link.download = "Reconciliation of 1Bill.xlsx";
     link.style.display = "none";
 
     document.body.appendChild(link);
