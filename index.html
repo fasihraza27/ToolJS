@@ -81,17 +81,83 @@
         <!-- CSV RESULT -->
         <div id="result" class="result-box">Upload files to begin...</div>
         <!-- DATE & TIME -->
-        <div class="section-title">Step 2 — Select Date & Time Range</div>
-        <div class="date-row">
-          <div class="input-group">
-            <label for="fromDateTime">From</label>
-            <input type="datetime-local" id="fromDateTime" />
-          </div>
-          <div class="input-group">
-            <label for="toDateTime">To</label>
-            <input type="datetime-local" id="toDateTime" />
-          </div>
-        </div>
+
+        
+        <!-- DATE & TIME -->
+<div class="section-title">Step 2 — Select Date & Time Range</div>
+
+<div class="date-row">
+
+  <div class="input-group">
+    <label>From</label>
+
+    <div class="date-time-custom">
+      <input type="date" id="fromDate" />
+
+      <select id="fromHour">
+        <option value="">HH</option>
+        <script>
+          for (let i = 0; i < 24; i++) {
+            const h = String(i).padStart(2, "0");
+            document.write(`<option value="${h}">${h}</option>`);
+          }
+        </script>
+      </select>
+
+      <span>:</span>
+
+      <select id="fromMinute">
+        <option value="">MM</option>
+        <script>
+          for (let i = 0; i < 60; i++) {
+            const m = String(i).padStart(2, "0");
+            document.write(`<option value="${m}">${m}</option>`);
+          }
+        </script>
+      </select>
+
+      <!-- Hidden input used by your EXISTING tool.js -->
+      <input type="hidden" id="fromDateTime" />
+    </div>
+  </div>
+
+
+  <div class="input-group">
+    <label>To</label>
+
+    <div class="date-time-custom">
+      <input type="date" id="toDate" />
+
+      <select id="toHour">
+        <option value="">HH</option>
+        <script>
+          for (let i = 0; i < 24; i++) {
+            const h = String(i).padStart(2, "0");
+            document.write(`<option value="${h}">${h}</option>`);
+          }
+        </script>
+      </select>
+
+      <span>:</span>
+
+      <select id="toMinute">
+        <option value="">MM</option>
+        <script>
+          for (let i = 0; i < 60; i++) {
+            const m = String(i).padStart(2, "0");
+            document.write(`<option value="${m}">${m}</option>`);
+          }
+        </script>
+      </select>
+
+      <!-- Hidden input used by your EXISTING tool.js -->
+      <input type="hidden" id="toDateTime" />
+    </div>
+  </div>
+
+</div>
+
+
         <!-- PROCESS CSV -->
         <div class="section-title">Step 3 — Process CSV</div>
         <div class="button-row-process">
@@ -141,6 +207,77 @@
       </div>
       2025 © ForeePay (Private) Limited. All Rights Reserved.
     </footer>
+    <script>
+  function updateDateTime(dateId, hourId, minuteId, hiddenId) {
+    const date = document.getElementById(dateId).value;
+    const hour = document.getElementById(hourId).value;
+    const minute = document.getElementById(minuteId).value;
+
+    if (date && hour !== "" && minute !== "") {
+      document.getElementById(hiddenId).value =
+        `${date}T${hour}:${minute}`;
+    } else {
+      document.getElementById(hiddenId).value = "";
+    }
+  }
+
+  document.getElementById("fromDate").addEventListener("change", function () {
+    updateDateTime(
+      "fromDate",
+      "fromHour",
+      "fromMinute",
+      "fromDateTime"
+    );
+  });
+
+  document.getElementById("fromHour").addEventListener("change", function () {
+    updateDateTime(
+      "fromDate",
+      "fromHour",
+      "fromMinute",
+      "fromDateTime"
+    );
+  });
+
+  document.getElementById("fromMinute").addEventListener("change", function () {
+    updateDateTime(
+      "fromDate",
+      "fromHour",
+      "fromMinute",
+      "fromDateTime"
+    );
+  });
+
+
+  document.getElementById("toDate").addEventListener("change", function () {
+    updateDateTime(
+      "toDate",
+      "toHour",
+      "toMinute",
+      "toDateTime"
+    );
+  });
+
+  document.getElementById("toHour").addEventListener("change", function () {
+    updateDateTime(
+      "toDate",
+      "toHour",
+      "toMinute",
+      "toDateTime"
+    );
+  });
+
+  document.getElementById("toMinute").addEventListener("change", function () {
+    updateDateTime(
+      "toDate",
+      "toHour",
+      "toMinute",
+      "toDateTime"
+    );
+  });
+</script>
+
+<script src="./tool.js"></script>
     <script src="./tool.js"></script>
   </body>
 </html>

@@ -513,3 +513,80 @@ footer a:hover {
     font-size: 11px;
   }
 }
+
+/* =========================================
+   CUSTOM 24-HOUR DATE & TIME CONTROLS
+   ========================================= */
+
+.date-time-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 70%;
+}
+
+.date-time-custom input[type="date"],
+.date-time-custom select {
+  height: 44px;
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 14px;
+  padding: 0 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Date field */
+.date-time-custom input[type="date"] {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Hour and minute dropdowns */
+.date-time-custom select {
+  width: 75px;
+  cursor: pointer;
+}
+
+/* Colon between hour and minute */
+.date-time-custom span {
+  font-size: 18px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Focus effect */
+.date-time-custom input[type="date"]:focus,
+.date-time-custom select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+/* Hover effect */
+.date-time-custom input[type="date"]:hover,
+.date-time-custom select:hover {
+  border-color: #adb5bd;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .date-time-custom {
+    gap: 5px;
+  }
+
+  .date-time-custom input[type="date"] {
+    width: 100%;
+  }
+
+  .date-time-custom select {
+    width: 65px;
+    padding: 0 8px;
+  }
+
+  .date-time-custom span {
+    font-size: 16px;
+  }
+}
