@@ -1282,6 +1282,152 @@ function matchData() {
 }
 
 // ============================================================
+// STEP 10 — Download Matching Csv file!!
+// ============================================================
+
+function downloadMatchedCSV() {
+  if (!processedData || processedData.length === 0) {
+    alert("Please process the CSV file first.");
+    return;
+  }
+
+  if (!matchedCSV || matchedCSV.size === 0) {
+    alert("No matched CSV data available.");
+    return;
+  }
+
+  try {
+    // ==========================================================
+    // SAME CSV HEADERS USED IN THE MatchedCSV SHEET
+    // ==========================================================
+
+    const csvHeaders = [
+      "Payment ID",
+      "Bill Creation Date",
+      "Bill Due Date",
+      "Transaction Date Time",
+      "Initiator Settlement Date",
+      "Initiator Settlement Status",
+      "Currency Code",
+      "Terminal ID",
+      "Consumer Reference Number",
+      "Mapped Consumer Reference Number",
+      "Fee Charging Type",
+      "Bill Status",
+      "Instrument Type",
+      "Instrument No",
+      "Instrument Institution",
+      "Payment Channel",
+      "Business Acquirer",
+      "Payment Ref ID",
+      "RRN",
+      "Initiator",
+      "Initiator Fee",
+      "Tax On Initiator Fee",
+      "Foree ID",
+      "Business Name",
+      "Sub Business Name",
+      "Amount Within Due Date",
+      "Amount After Due Date",
+      "Applicable Amount",
+      "Payable Amount By Customer",
+      "Discounted Payable Amount",
+      "Discount Applied",
+      "Offer ID",
+      "User Credits Account ID",
+      "Paid By Customer",
+      "MCC",
+      "Applicable SOC",
+      "Fee",
+      "Foree Share",
+      "Tax on Foree Share",
+      "Bank Share",
+      "Tax on Bank Share",
+      "Tax on Fee",
+      "Other Income",
+      "Settlement Amount To Biller/Acquirer",
+      "Settlement Amount To Foree",
+      "Bill Expiry Date",
+      "Biller Settlement Status",
+      "Biller Settlement Date",
+      "Settlement Institution",
+      "Settlement Batch ID",
+      "Biller Actual Settlement Date Time",
+      "Product Name"
+    ];
+
+    // ==========================================================
+    // CREATE EXACT SAME DATA AS MatchedCSV SHEET
+    // ==========================================================
+
+    const matchedCSVRows = [csvHeaders];
+
+    processedData.forEach((csvRow) => {
+      if (matchedCSV.has(csvRow)) {
+        const csvValues = csvHeaders.map(
+          (header) => csvRow[header] ?? ""
+        );
+
+        matchedCSVRows.push(csvValues);
+      }
+    });
+
+    // ==========================================================
+    // CHECK IF THERE IS ACTUALLY MATCHED DATA
+    // ==========================================================
+
+    if (matchedCSVRows.length <= 1) {
+      alert("No matched CSV data available.");
+      return;
+    }
+
+    // ==========================================================
+    // CONVERT TO CSV
+    // ==========================================================
+
+    const worksheet = XLSX.utils.aoa_to_sheet(matchedCSVRows);
+
+    const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+    // ==========================================================
+    // DOWNLOAD CSV
+    // ==========================================================
+
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;"
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "Upload file.csv";
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    console.log("Upload file.csv downloaded successfully");
+
+  } catch (error) {
+    console.error("Matched CSV Download Error:", error);
+
+    alert(
+      "Unable to download matched CSV.\n\n" +
+      error.message
+    );
+  }
+}
+
+// ============================================================
 // STEP 11 — DOWNLOAD COMPLETE TXT EXCEL REPORT
 // ============================================================
 
